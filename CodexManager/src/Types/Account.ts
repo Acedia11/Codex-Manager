@@ -17,19 +17,11 @@ export type TokenStatus =
   | "Refreshing"
   | { Error: string };
 
-export interface ProxyStatus {
-  Running: boolean;
-  Port: number;
-  AvailableAccounts: number;
-}
-
 export interface AccountDisplay {
   Id: string;
   Email: string;
   PlanType: string;
   HasPassword: boolean;
-  HasMsLinked: boolean;
-  IsMsEmail: boolean;
   EmailLink: string | null;
   Usage: UsageData | null;
   TokenStatus: TokenStatus;

@@ -9,7 +9,6 @@ const VAULT_USER: &str = "codexmanager";
 
 const TOKEN_SERVICE: &str = "com.codexmanager.tokens";
 const PASSWORD_SERVICE: &str = "com.codexmanager.passwords";
-const MS_TOKEN_SERVICE: &str = "com.codexmanager.ms-tokens";
 
 // Windows Credential Manager caps each blob at ~1280 UTF-16 chars.
 // 1200 leaves headroom for encoding variance.
@@ -21,8 +20,6 @@ struct Vault {
     Tokens: HashMap<String, TokenSet>,
     #[serde(default)]
     Passwords: HashMap<String, String>,
-    #[serde(default)]
-    MsTokens: HashMap<String, TokenSet>,
 }
 
 fn LoadVault() -> Vault {
@@ -204,18 +201,6 @@ pub fn MigrateOldEntries(AccountIds: &[String]) {
                 }
             }
         }
-        // Migrate MS tokens
-        if !V.MsTokens.contains_key(AcctId) {
-            if let Ok(Ent) = Entry::new(MS_TOKEN_SERVICE, AcctId) {
-                if let Ok(Json) = Ent.get_password() {
-                    if let Ok(Tokens) = serde_json::from_str::<TokenSet>(&Json) {
-                        V.MsTokens.insert(AcctId.clone(), Tokens);
-                        Changed = true;
-                        let _ = Ent.delete_credential();
-                    }
-                }
-            }
-        }
     }
 
     if Changed {
@@ -292,38 +277,32 @@ pub fn HasPassword(AccountId: &str) -> bool {
     LoadPassword(AccountId).ok().flatten().is_some()
 }
 
-pub fn StoreMsTokens(AccountId: &str, Tokens: &TokenSet) -> Result<(), String> {
-    if UsesPerEntryStorage() {
-        return StoreJson(MS_TOKEN_SERVICE, AccountId, Tokens);
+pub fn BatchCheckAccounts(AccountIds: &[&str]) -> (HashMap<String, bool>, HashMap<String, bool>) {
+    let V = LoadVault();
+    let mut HasTokens: HashMap<String, bool> = HashMap::new();
+    let mut HasPw: HashMap<String, bool> = HashMap::new();
+
+    for &AcctId in AccountIds {
+        let TokenFound = if UsesPerEntryStorage() {
+            LoadJson::<TokenSet>(TOKEN_SERVICE, AcctId).ok().flatten().is_some()
+                || V.Tokens.contains_key(AcctId)
+        } else {
+            V.Tokens.contains_key(AcctId)
+                || LoadJson::<TokenSet>(TOKEN_SERVICE, AcctId).ok().flatten().is_some()
+        };
+
+        let PwFound = if UsesPerEntryStorage() {
+            LoadString(PASSWORD_SERVICE, AcctId).ok().flatten().is_some()
+                || V.Passwords.contains_key(AcctId)
+        } else {
+            V.Passwords.contains_key(AcctId)
+                || LoadString(PASSWORD_SERVICE, AcctId).ok().flatten().is_some()
+        };
+
+        HasTokens.insert(AcctId.to_string(), TokenFound);
+        HasPw.insert(AcctId.to_string(), PwFound);
     }
 
-    let mut V = LoadVault();
-    V.MsTokens.insert(AccountId.to_string(), Tokens.clone());
-    SaveVault(&V)
+    (HasTokens, HasPw)
 }
 
-pub fn LoadMsTokens(AccountId: &str) -> Result<Option<TokenSet>, String> {
-    if UsesPerEntryStorage() {
-        if let Some(Tokens) = LoadJson(MS_TOKEN_SERVICE, AccountId)? {
-            return Ok(Some(Tokens));
-        }
-        return Ok(LoadVault().MsTokens.get(AccountId).cloned());
-    }
-
-    if let Some(Tokens) = LoadVault().MsTokens.get(AccountId).cloned() {
-        return Ok(Some(Tokens));
-    }
-
-    LoadJson(MS_TOKEN_SERVICE, AccountId)
-}
-
-pub fn DeleteMsTokens(AccountId: &str) -> Result<(), String> {
-    MergeDeleteResults(&[
-        DeleteEntry(MS_TOKEN_SERVICE, AccountId),
-        DeleteFromVault(|V| V.MsTokens.remove(AccountId).is_some()),
-    ])
-}
-
-pub fn HasMsTokens(AccountId: &str) -> bool {
-    LoadMsTokens(AccountId).ok().flatten().is_some()
-}

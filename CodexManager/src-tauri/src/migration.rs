@@ -13,8 +13,6 @@ struct MigrationVault {
     Tokens: HashMap<String, TokenSet>,
     #[serde(default)]
     Passwords: HashMap<String, String>,
-    #[serde(default)]
-    MsTokens: HashMap<String, TokenSet>,
 }
 
 #[derive(Deserialize)]
@@ -81,12 +79,6 @@ pub fn TryImport() -> Vec<AccountMeta> {
     for (AcctId, Password) in &Data.Vault.Passwords {
         if let Err(E) = keychain::StorePassword(AcctId, Password) {
             Errors.push(format!("password for {}: {}", AcctId, E));
-        }
-    }
-
-    for (AcctId, MsTokens) in &Data.Vault.MsTokens {
-        if let Err(E) = keychain::StoreMsTokens(AcctId, MsTokens) {
-            Errors.push(format!("MS tokens for {}: {}", AcctId, E));
         }
     }
 

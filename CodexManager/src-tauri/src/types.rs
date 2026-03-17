@@ -44,33 +44,9 @@ pub struct AccountDisplay {
     pub Email: String,
     pub PlanType: String,
     pub HasPassword: bool,
-    pub HasMsLinked: bool,
-    pub IsMsEmail: bool,
     pub EmailLink: Option<String>,
     pub Usage: Option<UsageData>,
     pub TokenStatus: TokenStatus,
     pub LastRefreshed: Option<i64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ProxyAccountInfo {
-    pub Email: String,
-    pub PlanType: String,
-    pub PrimaryUsedPercent: f64,
-    pub SecondaryUsedPercent: f64,
-    pub Active: bool,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ProxyStatus {
-    pub Running: bool,
-    pub Port: u16,
-    pub AvailableAccounts: u32,
-}
-
-const MS_DOMAINS: &[&str] = &["@hotmail.com", "@outlook.com", "@live.com", "@msn.com"];
-
-pub fn IsMsEmail(Email: &str) -> bool {
-    let Lower = Email.to_lowercase();
-    MS_DOMAINS.iter().any(|D| Lower.ends_with(D))
-}

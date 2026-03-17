@@ -3,11 +3,9 @@
 mod commands;
 mod config;
 mod keychain;
-mod microsoft;
 mod migration;
 mod oauth;
 mod polling;
-mod proxy;
 mod state;
 mod types;
 mod utils;
@@ -53,14 +51,13 @@ pub fn run() {
             keychain::MigrateOldEntries(&OldAccountIds);
 
             {
+                let AccountIds: Vec<&str> = Metas.iter().map(|M| M.AccountId.as_str()).collect();
+                let (TokenMap, PwMap) = keychain::BatchCheckAccounts(&AccountIds);
+
                 let State = Handle.state::<SharedState>();
                 let mut Guard = State.lock().unwrap();
                 for Meta in Metas {
-                    let HasTokens = keychain::LoadTokens(&Meta.AccountId)
-                        .ok()
-                        .flatten()
-                        .is_some();
-
+                    let HasTokens = TokenMap.get(&Meta.AccountId).copied().unwrap_or(false);
                     let Status = if HasTokens {
                         types::TokenStatus::Active
                     } else {
@@ -68,6 +65,10 @@ pub fn run() {
                     };
 
                     Guard.TokenStatus.insert(Meta.Id.clone(), Status);
+                    Guard.HasPassword.insert(
+                        Meta.Id.clone(),
+                        PwMap.get(&Meta.AccountId).copied().unwrap_or(false),
+                    );
                     Guard.Accounts.insert(Meta.Id.clone(), Meta);
                 }
             }
@@ -78,11 +79,6 @@ pub fn run() {
             });
 
             polling::StartPollingTask(Handle.clone());
-
-            let ProxyState = Handle.state::<SharedState>().inner().clone();
-            tauri::async_runtime::spawn(async move {
-                proxy::StartProxyServer(ProxyState).await;
-            });
 
             Ok(())
         })
@@ -95,9 +91,6 @@ pub fn run() {
             commands::RefreshAccount,
             commands::RefreshAll,
             commands::SetEmailLink,
-            commands::LinkHotmail,
-            commands::FetchVerificationCode,
-            commands::GetProxyStatus,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

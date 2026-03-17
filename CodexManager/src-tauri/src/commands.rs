@@ -1,12 +1,10 @@
 use tauri::{AppHandle, Manager};
 use crate::config;
 use crate::keychain;
-use crate::microsoft;
 use crate::oauth;
 use crate::polling;
-use crate::proxy;
 use crate::state::SharedState;
-use crate::types::{AccountDisplay, AccountMeta, ProxyStatus, TokenStatus};
+use crate::types::{AccountDisplay, AccountMeta, TokenStatus};
 
 fn SaveAllConfig(AppHandle: &AppHandle) -> Result<(), String> {
     let Metas: Vec<AccountMeta> = {
@@ -46,11 +44,9 @@ pub async fn StartLogin(AppHandle: AppHandle) -> Result<AccountDisplay, String> 
         Guard.TokenStatus.insert(Id.clone(), TokenStatus::Active);
     }
 
-    SaveAllConfig(&AppHandle)?;
-
     let _ = polling::RefreshSingleAccount(&AppHandle, &Id, &AccountId).await;
 
-    let _ = SaveAllConfig(&AppHandle);
+    SaveAllConfig(&AppHandle)?;
 
     let State = AppHandle.state::<SharedState>();
     let Guard = State.lock().unwrap();
@@ -67,13 +63,12 @@ pub async fn RemoveAccount(AppHandle: AppHandle, Id: String) -> Result<(), Strin
         Guard.Usage.remove(&Id);
         Guard.TokenStatus.remove(&Id);
         Guard.LastRefreshed.remove(&Id);
+        Guard.HasPassword.remove(&Id);
         Meta.AccountId
     };
 
     let _ = keychain::DeleteTokens(&AccountId);
     let _ = keychain::DeletePassword(&AccountId);
-    let _ = keychain::DeleteMsTokens(&AccountId);
-
     SaveAllConfig(&AppHandle)?;
 
     Ok(())
@@ -81,9 +76,11 @@ pub async fn RemoveAccount(AppHandle: AppHandle, Id: String) -> Result<(), Strin
 
 #[tauri::command]
 pub fn SetPassword(StateHandle: tauri::State<'_, SharedState>, Id: String, Password: String) -> Result<(), String> {
-    let Guard = StateHandle.lock().unwrap();
+    let mut Guard = StateHandle.lock().unwrap();
     let AccountId = Guard.GetAccountId(&Id)?;
-    keychain::StorePassword(&AccountId, &Password)
+    keychain::StorePassword(&AccountId, &Password)?;
+    Guard.HasPassword.insert(Id, true);
+    Ok(())
 }
 
 #[tauri::command]
@@ -133,45 +130,3 @@ pub fn SetEmailLink(AppHandle: AppHandle, Id: String, Link: String) -> Result<()
     config::SaveConfig(&AppHandle, &Metas)
 }
 
-#[tauri::command]
-pub async fn LinkHotmail(AppHandle: AppHandle, Id: String) -> Result<AccountDisplay, String> {
-    let AccountId = {
-        let State = AppHandle.state::<SharedState>();
-        let Guard = State.lock().unwrap();
-        Guard.GetAccountId(&Id)?
-    };
-
-    let Tokens = microsoft::LinkAccount().await?;
-    keychain::StoreMsTokens(&AccountId, &Tokens)?;
-
-    let State = AppHandle.state::<SharedState>();
-    let Guard = State.lock().unwrap();
-    Guard.ToDisplay(&Id).ok_or_else(|| "Account not found".to_string())
-}
-
-#[tauri::command]
-pub async fn FetchVerificationCode(AppHandle: AppHandle, Id: String) -> Result<Option<String>, String> {
-    let AccountId = {
-        let State = AppHandle.state::<SharedState>();
-        let Guard = State.lock().unwrap();
-        Guard.GetAccountId(&Id)?
-    };
-
-    let Result = microsoft::FetchVerificationCode(&AccountId).await?;
-    if let Some(ref Code) = Result {
-        if let Ok(mut Clipboard) = arboard::Clipboard::new() {
-            let _ = Clipboard.set_text(Code);
-        }
-    }
-    Ok(Result)
-}
-
-#[tauri::command]
-pub fn GetProxyStatus(StateHandle: tauri::State<'_, SharedState>) -> ProxyStatus {
-    let Guard = StateHandle.lock().unwrap();
-    ProxyStatus {
-        Running: Guard.ProxyRunning,
-        Port: proxy::PROXY_PORT,
-        AvailableAccounts: Guard.AvailableAccountCount(),
-    }
-}

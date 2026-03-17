@@ -1,14 +1,13 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use crate::types::{AccountMeta, UsageData, TokenStatus, AccountDisplay, IsMsEmail};
-use crate::keychain;
+use crate::types::{AccountMeta, UsageData, TokenStatus, AccountDisplay};
 
 pub struct AppState {
     pub Accounts: HashMap<String, AccountMeta>,
     pub Usage: HashMap<String, UsageData>,
     pub TokenStatus: HashMap<String, TokenStatus>,
     pub LastRefreshed: HashMap<String, i64>,
-    pub ProxyRunning: bool,
+    pub HasPassword: HashMap<String, bool>,
 }
 
 impl Default for AppState {
@@ -18,7 +17,7 @@ impl Default for AppState {
             Usage: HashMap::new(),
             TokenStatus: HashMap::new(),
             LastRefreshed: HashMap::new(),
-            ProxyRunning: false,
+            HasPassword: HashMap::new(),
         }
     }
 }
@@ -29,9 +28,7 @@ impl AppState {
             Id: Meta.Id.clone(),
             Email: Meta.Email.clone(),
             PlanType: Meta.PlanType.clone(),
-            HasPassword: keychain::HasPassword(&Meta.AccountId),
-            HasMsLinked: keychain::HasMsTokens(&Meta.AccountId),
-            IsMsEmail: IsMsEmail(&Meta.Email),
+            HasPassword: self.HasPassword.get(&Meta.Id).copied().unwrap_or(false),
             EmailLink: Meta.EmailLink.clone(),
             Usage: self.Usage.get(&Meta.Id).cloned(),
             TokenStatus: self.TokenStatus.get(&Meta.Id).cloned().unwrap_or(TokenStatus::Active),
@@ -61,28 +58,6 @@ impl AppState {
         self.Accounts.values().cloned().collect()
     }
 
-    fn AvailableAccounts(&self) -> impl Iterator<Item = &AccountMeta> {
-        self.Accounts.values()
-            .filter(|Meta| matches!(self.TokenStatus.get(&Meta.Id), Some(TokenStatus::Active)))
-            .filter(|Meta| match self.Usage.get(&Meta.Id) {
-                Some(U) => U.SecondaryUsedPercent < 97.0,
-                None => true,
-            })
-    }
-
-    pub fn SelectBestAccount(&self) -> Option<(String, String, String)> {
-        self.AvailableAccounts()
-            .min_by(|A, B| {
-                let Pa = self.Usage.get(&A.Id).map(|U| U.PrimaryUsedPercent).unwrap_or(0.0);
-                let Pb = self.Usage.get(&B.Id).map(|U| U.PrimaryUsedPercent).unwrap_or(0.0);
-                Pa.partial_cmp(&Pb).unwrap_or(std::cmp::Ordering::Equal)
-            })
-            .map(|Meta| (Meta.Id.clone(), Meta.AccountId.clone(), Meta.Email.clone()))
-    }
-
-    pub fn AvailableAccountCount(&self) -> u32 {
-        self.AvailableAccounts().count() as u32
-    }
 }
 
 pub type SharedState = Arc<Mutex<AppState>>;

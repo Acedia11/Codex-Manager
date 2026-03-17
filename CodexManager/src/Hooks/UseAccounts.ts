@@ -1,23 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import type { AccountDisplay, ProxyStatus } from "../Types/Account";
+import type { AccountDisplay } from "../Types/Account";
 
 export function UseAccounts() {
   const [Accounts, SetAccounts] = useState<AccountDisplay[]>([]);
   const [Loading, SetLoading] = useState(true);
   const [Adding, SetAdding] = useState(false);
-  const [Proxy, SetProxy] = useState<ProxyStatus | null>(null);
 
   useEffect(() => {
     invoke<AccountDisplay[]>("GetAccounts")
       .then(SetAccounts)
       .catch(console.error)
       .finally(() => SetLoading(false));
-
-    invoke<ProxyStatus>("GetProxyStatus")
-      .then(SetProxy)
-      .catch(console.error);
 
     const Unlisten = listen<AccountDisplay[]>("accounts-updated", (Ev) => {
       SetAccounts(Ev.payload);
@@ -67,15 +62,6 @@ export function UseAccounts() {
     return invoke<string | null>("GetPassword", { id: Id });
   }, []);
 
-  const LinkHotmail = useCallback(async (Id: string) => {
-    const Updated = await invoke<AccountDisplay>("LinkHotmail", { id: Id });
-    SetAccounts((Prev) => Prev.map((A) => (A.Id === Id ? Updated : A)));
-  }, []);
-
-  const FetchCode = useCallback(async (Id: string): Promise<string | null> => {
-    return invoke<string | null>("FetchVerificationCode", { id: Id });
-  }, []);
-
   const SetEmailLink = useCallback(async (Id: string, Link: string) => {
     await invoke("SetEmailLink", { id: Id, link: Link });
     SetAccounts((Prev) =>
@@ -87,15 +73,12 @@ export function UseAccounts() {
     Accounts,
     Loading,
     Adding,
-    Proxy,
     AddAccount,
     RemoveAccount,
     RefreshOne,
     RefreshAll,
     SetPassword,
     GetPassword,
-    LinkHotmail,
-    FetchCode,
     SetEmailLink,
   };
 }

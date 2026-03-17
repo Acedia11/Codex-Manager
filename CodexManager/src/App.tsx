@@ -24,10 +24,7 @@ export default function App() {
     RefreshAll,
     SetPassword,
     GetPassword,
-    LinkHotmail,
-    FetchCode,
     SetEmailLink,
-    Proxy,
   } = UseAccounts();
 
   const [RefreshingAll, SetRefreshingAll] = useState(false);
@@ -95,48 +92,24 @@ export default function App() {
       const Acct = Accounts.find((A) => A.Id === Id);
       if (!Acct) return;
 
-      if (Acct.IsMsEmail) {
-        if (!Acct.HasMsLinked) {
-          try {
-            await LinkHotmail(Id);
-            ShowToast("Hotmail account linked", "Success");
-          } catch (Err) {
-            ShowToast(String(Err), "Error");
-          }
-        } else {
-          try {
-            const Code = await FetchCode(Id);
-            if (Code) {
-              ShowToast(`Code copied: ${Code}`, "Success");
-            } else {
-              ShowToast("No verification code found", "Error");
-            }
-          } catch (Err) {
-            ShowToast(String(Err), "Error");
-          }
+      if (Acct.EmailLink) {
+        try {
+          await openUrl(Acct.EmailLink);
+        } catch (Err) {
+          ShowToast(String(Err), "Error");
         }
       } else {
-        if (Acct.EmailLink) {
-          try {
-            await openUrl(Acct.EmailLink);
-          } catch (Err) {
-            ShowToast(String(Err), "Error");
-          }
-        } else {
-          SetEditingEmailLinkId(Id);
-        }
+        SetEditingEmailLinkId(Id);
       }
     },
-    [Accounts, LinkHotmail, FetchCode, ShowToast]
+    [Accounts, ShowToast]
   );
 
   const HandleMailLongPress = useCallback(
     (Id: string) => {
-      const Acct = Accounts.find((A) => A.Id === Id);
-      if (!Acct || Acct.IsMsEmail) return;
       SetEditingEmailLinkId(Id);
     },
-    [Accounts]
+    []
   );
 
   const HandleSaveEmailLink = useCallback(
@@ -189,7 +162,6 @@ export default function App() {
           OnRefreshAll={HandleRefreshAll}
           Adding={Adding}
           Refreshing={RefreshingAll}
-          Proxy={Proxy}
         />
         <AccountGrid
           Accounts={Accounts}

@@ -32,26 +32,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.TopBar__Proxy {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--green);
-  background: var(--green-dim);
-  padding: 2px 7px;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.TopBar__ProxyDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-}
-
 .TopBar__Actions {
   display: flex;
   gap: 8px;
@@ -127,47 +107,6 @@
   min-width: 32px;
   min-height: 32px;
   justify-content: center;
-}
-
-/* =================== DROPDOWN =================== */
-
-.Dropdown {
-  position: relative;
-}
-
-.Dropdown__Menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  background: var(--bg-2);
-  border: 1px solid var(--border-2);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-modal);
-  min-width: 180px;
-  padding: 4px;
-  z-index: 50;
-  animation: DropdownIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: top right;
-}
-
-.Dropdown__Item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  color: var(--text-1);
-  background: none;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.1s ease, color 0.1s ease;
-}
-
-.Dropdown__Item:hover {
-  background: var(--bg-3);
-  color: var(--text-0);
 }
 
 /* =================== GRID =================== */
@@ -260,19 +199,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  cursor: pointer;
-  transition: color 0.15s;
   word-break: break-all;
-}
-
-.Card__Email:hover {
-  color: var(--text-1);
-}
-
-.Card__HeaderActions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
 }
 
 .Card__Badges {
@@ -663,13 +590,13 @@
   border-color: rgba(196, 82, 74, 0.2) !important;
 }
 
-/* =================== MAIL BUTTON =================== */
+/* =================== EMAIL LINK =================== */
 
-.Btn--MsLinked {
+.Btn--EmailLinked {
   position: relative;
 }
 
-.MsLinkedDot {
+.EmailLinkedDot {
   position: absolute;
   top: 4px;
   right: 4px;

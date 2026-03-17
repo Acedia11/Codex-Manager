@@ -98,10 +98,7 @@ export function AccountCard({
     >
       <div className="Card__Header">
         <div className="Card__Identity">
-          <div
-            className="Card__Email"
-            title="Click to copy email"
-          >
+          <div className="Card__Email">
             <span>{Account.Email}</span>
             <CopyButton Text={Account.Email} Label="Copy email" />
           </div>
@@ -170,24 +167,16 @@ export function AccountCard({
         </span>
         <div className="Card__FooterActions">
           <button
-            className={`Btn Btn--Ghost Btn--Small Btn--Icon${
-              Account.HasMsLinked || (!Account.IsMsEmail && Account.EmailLink) ? " Btn--MsLinked" : ""
-            }`}
+            className={`Btn Btn--Ghost Btn--Small Btn--Icon${Account.EmailLink ? " Btn--EmailLinked" : ""}`}
             onClick={HandleMailClick}
-            onPointerDown={!Account.IsMsEmail ? HandleMailPointerDown : undefined}
-            onPointerUp={!Account.IsMsEmail ? HandleMailPointerUp : undefined}
-            onPointerLeave={!Account.IsMsEmail ? HandleMailPointerUp : undefined}
+            onPointerDown={HandleMailPointerDown}
+            onPointerUp={HandleMailPointerUp}
+            onPointerLeave={HandleMailPointerUp}
             disabled={MailBusy}
-            title={
-              Account.IsMsEmail
-                ? Account.HasMsLinked ? "Fetch verification code" : "Link Microsoft account"
-                : Account.EmailLink ? "Open email (hold to edit)" : "Set email link"
-            }
+            title={Account.EmailLink ? "Open email (hold to edit)" : "Set email link"}
           >
             <IconMail />
-            {(Account.HasMsLinked || (!Account.IsMsEmail && Account.EmailLink)) && (
-              <span className="MsLinkedDot" />
-            )}
+            {Account.EmailLink && <span className="EmailLinkedDot" />}
           </button>
           <button
             className={`Btn Btn--Ghost Btn--Small Btn--Icon${
