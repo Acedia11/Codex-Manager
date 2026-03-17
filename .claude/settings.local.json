@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//c/Users/ogace/CodexManager/$HOME/.claude/**)",
-      "Bash(cp:*)"
-    ]
-  }
-}
