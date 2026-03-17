@@ -1,0 +1,691 @@
+.TopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px 20px;
+  border-bottom: 1px solid var(--border-1);
+}
+
+.TopBar__Left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.TopBar__Title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-0);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.TopBar__Count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--bg-3);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.TopBar__Proxy {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--green);
+  background: var(--green-dim);
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.TopBar__ProxyDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.TopBar__Actions {
+  display: flex;
+  gap: 8px;
+}
+
+.Btn {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 7px 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.Btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.Btn--Primary {
+  background: var(--text-0);
+  color: var(--bg-0);
+}
+
+.Btn--Primary:hover {
+  background: #fff;
+}
+
+.Btn--Primary:active {
+  background: var(--text-1);
+}
+
+.Btn--Primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.Btn--Ghost {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border-2);
+}
+
+.Btn--Ghost:hover {
+  background: var(--bg-3);
+  color: var(--text-1);
+  border-color: var(--border-3);
+}
+
+.Btn--Danger {
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid rgba(196, 82, 74, 0.15);
+}
+
+.Btn--Danger:hover {
+  background: rgba(196, 82, 74, 0.15);
+}
+
+.Btn--Small {
+  font-size: 0.72rem;
+  padding: 5px 8px;
+}
+
+.Btn--Icon {
+  padding: 6px;
+  min-width: 32px;
+  min-height: 32px;
+  justify-content: center;
+}
+
+/* =================== DROPDOWN =================== */
+
+.Dropdown {
+  position: relative;
+}
+
+.Dropdown__Menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-modal);
+  min-width: 180px;
+  padding: 4px;
+  z-index: 50;
+  animation: DropdownIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top right;
+}
+
+.Dropdown__Item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--text-1);
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.Dropdown__Item:hover {
+  background: var(--bg-3);
+  color: var(--text-0);
+}
+
+/* =================== GRID =================== */
+
+.AccountGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 1px;
+  padding: 0;
+  background: var(--border-1);
+  animation: FadeIn 0.3s ease;
+}
+
+.AccountGrid--Empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 80px 32px;
+  animation: FadeIn 0.4s ease;
+}
+
+.EmptyState__Icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  color: var(--text-3);
+}
+
+.EmptyState__Title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-1);
+  margin-bottom: 6px;
+  text-wrap: balance;
+}
+
+.EmptyState__Desc {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  text-wrap: pretty;
+}
+
+/* =================== CARD =================== */
+
+.Card {
+  background: var(--bg-1);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: background 0.15s ease;
+  animation: FadeInUp 0.3s ease backwards;
+}
+
+.Card:hover {
+  background: var(--bg-2);
+}
+
+.Card__Header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.Card__Identity {
+  flex: 1;
+  min-width: 0;
+}
+
+.Card__Email {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-0);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: color 0.15s;
+  word-break: break-all;
+}
+
+.Card__Email:hover {
+  color: var(--text-1);
+}
+
+.Card__HeaderActions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.Card__Badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* =================== BADGES =================== */
+
+.PlanBadge {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1.3;
+}
+
+.PlanBadge--Plus {
+  background: rgba(110, 201, 160, 0.1);
+  color: var(--plan-plus);
+}
+
+.PlanBadge--Pro {
+  background: rgba(139, 139, 212, 0.1);
+  color: var(--plan-pro);
+}
+
+.PlanBadge--Team {
+  background: rgba(110, 170, 201, 0.1);
+  color: var(--plan-team);
+}
+
+.PlanBadge--Unknown {
+  background: var(--bg-4);
+  color: var(--text-3);
+}
+
+.StatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.StatusDot--Active {
+  background: var(--green);
+}
+
+.StatusDot--Expired {
+  background: var(--red);
+}
+
+.StatusDot--Refreshing {
+  background: var(--amber);
+  animation: Pulse 1.5s ease infinite;
+}
+
+.StatusDot--Error {
+  background: var(--red);
+}
+
+/* =================== PASSWORD =================== */
+
+.PasswordRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 6px 10px;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-1);
+}
+
+.PasswordRow__Value {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-1);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.PasswordRow__Dots {
+  letter-spacing: 2px;
+  color: var(--text-3);
+}
+
+.PasswordRow__None {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  color: var(--text-3);
+}
+
+.PasswordRow__Actions {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.IconBtn {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.12s ease, background 0.12s ease, transform 0.1s ease;
+  font-size: 0.78rem;
+  min-width: 28px;
+  min-height: 28px;
+}
+
+.IconBtn:active {
+  transform: scale(0.96);
+}
+
+.IconBtn:hover {
+  color: var(--text-1);
+  background: var(--bg-4);
+}
+
+.IconBtn--Copied {
+  color: var(--green) !important;
+}
+
+/* =================== USAGE BARS =================== */
+
+.UsageSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.UsageBar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.UsageBar__Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.UsageBar__Label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.UsageBar__Value {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.UsageBar__Value--Low { color: var(--green); }
+.UsageBar__Value--Mid { color: var(--amber); }
+.UsageBar__Value--High { color: var(--red); }
+
+.UsageBar__Track {
+  height: 4px;
+  background: var(--bg-4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.UsageBar__Fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.UsageBar__Fill--Low { background: var(--green); }
+.UsageBar__Fill--Mid { background: var(--amber); }
+.UsageBar__Fill--High { background: var(--red); }
+
+.UsageBar__Reset {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =================== CREDITS =================== */
+
+.CreditsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-1);
+}
+
+.CreditsRow__Label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.CreditsRow__Value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-0);
+  font-variant-numeric: tabular-nums;
+}
+
+.CreditsRow__Unlimited {
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+/* =================== CARD FOOTER =================== */
+
+.Card__Footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-1);
+}
+
+.Card__LastRefreshed {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.Card__FooterActions {
+  display: flex;
+  gap: 2px;
+}
+
+/* =================== MODALS =================== */
+
+.ModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: FadeIn 0.15s ease;
+}
+
+.Modal {
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  box-shadow: var(--shadow-modal);
+  animation: ModalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.Modal__Title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 6px;
+  text-wrap: balance;
+}
+
+.Modal__Desc {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  text-wrap: pretty;
+}
+
+.Modal__Input {
+  width: 100%;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-md);
+  color: var(--text-0);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  margin-bottom: 16px;
+}
+
+.Modal__Input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(140, 160, 180, 0.08);
+}
+
+.Modal__Actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* =================== LOADING =================== */
+
+.LoadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 60px;
+}
+
+.Spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-2);
+  border-top-color: var(--text-2);
+  border-radius: 50%;
+  animation: Spin 0.7s linear infinite;
+}
+
+@keyframes Spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =================== TOAST =================== */
+
+.Toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  color: var(--text-1);
+  box-shadow: var(--shadow-modal);
+  z-index: 200;
+  animation: SlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.Toast--Error {
+  border-color: rgba(196, 82, 74, 0.2);
+  color: var(--red);
+}
+
+.Toast--Success {
+  border-color: rgba(74, 222, 128, 0.15);
+  color: var(--green);
+}
+
+/* =================== REFRESH FEEDBACK =================== */
+
+.Btn--Spinning svg {
+  animation: Spin 0.7s linear infinite;
+}
+
+.Btn--RefreshOk {
+  color: var(--green) !important;
+  border-color: rgba(74, 222, 128, 0.2) !important;
+}
+
+.Btn--RefreshFail {
+  color: var(--red) !important;
+  border-color: rgba(196, 82, 74, 0.2) !important;
+}
+
+/* =================== MAIL BUTTON =================== */
+
+.Btn--MsLinked {
+  position: relative;
+}
+
+.MsLinkedDot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* =================== RESPONSIVE =================== */
+
+@media (max-width: 420px) {
+  .AccountGrid {
+    grid-template-columns: 1fr;
+  }
+  .TopBar {
+    padding: 16px;
+  }
+}
